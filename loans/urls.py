@@ -1,5 +1,8 @@
 from django.urls import path
-from loans.views import LoanListCreateView, PaymentListCreateView, RemainingBalanceView
+
+from loans.views import LoanListCreateView
+from loans.views import PaymentListCreateView
+from loans.views import RemainingBalanceView
 
 urlpatterns = [
     path("emprestimos/", LoanListCreateView.as_view(), name="loan-list"),
