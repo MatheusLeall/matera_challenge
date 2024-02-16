@@ -42,7 +42,10 @@ DJANGO_APPS: List[str] = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS: List[str] = ["rest_framework"]
+THIRD_PARTY_APPS: List[str] = [
+    "rest_framework",
+    "rest_framework.authtoken",
+]
 
 LOCAL_APPS: List[str] = ["loans"]
 
@@ -130,3 +133,10 @@ STATIC_URL: str = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
+
+# DRF
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+}
