@@ -7,5 +7,9 @@ from loans.views import RemainingBalanceView
 urlpatterns = [
     path("loans/", LoanListCreateView.as_view(), name="loan-list"),
     path("payments/", PaymentListCreateView.as_view(), name="payment-list"),
-    path("remainig_balance/", RemainingBalanceView.as_view(), name="remaining-balance"),
+    path(
+        "remainig_balance/<uuid:id>/",
+        RemainingBalanceView.as_view(),
+        name="remaining-balance",
+    ),
 ]

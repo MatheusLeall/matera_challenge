@@ -45,6 +45,7 @@ DJANGO_APPS: List[str] = [
 THIRD_PARTY_APPS: List[str] = [
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_yasg",
 ]
 
 LOCAL_APPS: List[str] = ["loans"]
@@ -139,4 +140,18 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
     ],
+}
+
+# Swagger
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Token": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "description": "Token de autenticação do DRF",
+            "in": "header",
+        },
+    },
+    "USE_SESSION_AUTH": False,
+    "JSON_EDITOR": True,
 }

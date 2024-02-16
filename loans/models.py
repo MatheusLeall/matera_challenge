@@ -15,7 +15,7 @@ class Loan(models.Model):
     bank = models.CharField(max_length=255)
     client = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    def calculate_remainig_balance(self):
+    def calculate_remaining_balance(self):
         payments = Payment.objects.filter(loan=self)
         total_payed = sum(p.payment_value for p in payments)
         days_passed = (date.today() - self.request_date).days
