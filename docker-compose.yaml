@@ -1,0 +1,21 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - .:/app
+    ports:
+      - "${DJANGO_BIND_PORT}:${DJANGO_BIND_PORT}"
+    command: [ "./scripts/start.sh" ]
+  integration-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: [ "./scripts/start-tests.sh" ]
