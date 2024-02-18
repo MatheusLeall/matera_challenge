@@ -7,6 +7,7 @@ from loans.models import Loan
 from loans.models import Payment
 from loans.serializers import LoanSerializer
 from loans.serializers import PaymentSerializer
+from loans.serializers import RemainingBalanceSerializer
 
 
 class LoanListCreateView(generics.ListCreateAPIView):
@@ -29,7 +30,7 @@ class PaymentListCreateView(generics.ListCreateAPIView):
 
 
 class RemainingBalanceView(generics.RetrieveAPIView):
-    serializer_class = LoanSerializer
+    serializer_class = RemainingBalanceSerializer
     queryset = Loan.objects.all()
     lookup_field = "id"
 
@@ -39,15 +40,11 @@ class RemainingBalanceView(generics.RetrieveAPIView):
         # Checks if the loan belongs to the authenticated user
         if instance.client != request.user:
             return Response(
-                {"error": "Você não tem permissão para acessar este recurso."},
+                {"error": "You do not have permission to access the resource"},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # Calculates the remaining balance using the model method
-        remaining_balance = instance.calculate_remaining_balance()
-
         serializer = self.get_serializer(instance)
         data = serializer.data
-        data["remaining_balance"] = remaining_balance
 
         return Response(data)

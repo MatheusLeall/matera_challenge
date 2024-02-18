@@ -212,7 +212,7 @@ class TestRemainingBalanceView:
         # Assert
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.data == {
-            "error": "Você não tem permissão para acessar este recurso."
+            "error": "You do not have permission to access the resource"
         }
 
     def test_should_return_200_ok_when_user_get_remaining_balance(self):
