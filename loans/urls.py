@@ -8,7 +8,7 @@ urlpatterns = [
     path("loans/", LoanListCreateView.as_view(), name="loans"),
     path("payments/", PaymentListCreateView.as_view(), name="payments"),
     path(
-        "remainig_balance/<uuid:id>/",
+        "remaining_balance/<uuid:id>/",
         RemainingBalanceView.as_view(),
         name="remaining-balance",
     ),
