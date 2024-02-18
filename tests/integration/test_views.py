@@ -115,6 +115,31 @@ class TestPaymentView:
         # Assert
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
+    def test_should_return_400_bad_request_when_payment_value_grather_than_remaining_balance(
+        self, api_client, user, token, loan
+    ):
+        # Arrange
+        view = PaymentListCreateView.as_view()
+        url = reverse("payments")
+
+        data = {
+            "payment_date": date.today(),
+            "payment_value": 2000,
+            "loan": loan.pk,
+        }
+
+        # Act
+        request = api_client.post(
+            url, data, format="json", HTTP_AUTHORIZATION=f"Token {token.key}"
+        )
+        response = view(request)
+
+        # Assert
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "error": "Payment amount greater than remaining balance."
+        }
+
     def test_should_return_201_created_when_create_payment(
         self, api_client, user, token, loan
     ):
