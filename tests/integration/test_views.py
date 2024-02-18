@@ -15,30 +15,51 @@ from loans.views import PaymentListCreateView
 from loans.views import RemainingBalanceView
 
 
+@pytest.fixture
+def api_client():
+    return APIRequestFactory()
+
+
+@pytest.fixture
+def user():
+    return User.objects.create_user(username="testuser", password="testpass")
+
+
+@pytest.fixture
+def token(user):
+    return Token.objects.create(user=user)
+
+
+@pytest.fixture
+def loan(user):
+    return Loan.objects.create(
+        nominal_value=1000,
+        interest_rate=0.05,
+        ip_address="127.0.0.1",
+        bank="Banco Teste",
+        client=user,
+    )
+
+
 @pytest.mark.django_db
 class TestLoanView:
-    def test_should_return_401_unauthorized_when_credentials_is_not_provided(self):
+    def test_should_return_401_unauthorized_when_credentials_is_not_provided(
+        self, api_client, user
+    ):
         # Arrange
-        User.objects.create_user(username="testuser", password="testpass")
-
         view = LoanListCreateView.as_view()
-        factory = APIRequestFactory()
         url = reverse("loans")
 
         # Act
-        request = factory.post(url, data={"test": "data"}, format="json")
+        request = api_client.post(url, data={"test": "data"}, format="json")
         response = view(request)
 
         # Assert
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_should_return_201_created_when_create_loan(self):
+    def test_should_return_201_created_when_create_loan(self, api_client, user, token):
         # Arrange
-        user = User.objects.create_user(username="testuser", password="testpass")
-        token = Token.objects.create(user=user)
-
         view = LoanListCreateView.as_view()
-        factory = APIRequestFactory()
         url = reverse("loans")
 
         data = {
@@ -51,7 +72,7 @@ class TestLoanView:
         }
 
         # Act
-        request = factory.post(
+        request = api_client.post(
             url, data, format="json", HTTP_AUTHORIZATION=f"Token {token.key}"
         )
         response = view(request)
@@ -60,27 +81,17 @@ class TestLoanView:
         assert response.status_code == status.HTTP_201_CREATED
         assert Loan.objects.count() == 1
 
-    def test_should_return_200_ok_when_get_loan_information(self):
+    def test_should_return_200_ok_when_get_loan_information(
+        self, api_client, user, token, loan
+    ):
         # Arrange
-        user = User.objects.create_user(username="testuser", password="testpass")
-        token = Token.objects.create(user=user)
-
-        loan = Loan.objects.create(
-            nominal_value=1000,
-            interest_rate=0.05,
-            ip_address="127.0.0.1",
-            bank="Banco Teste",
-            client=user,
-        )
-
         view = LoanListCreateView.as_view()
-        factory = APIRequestFactory()
         url = reverse("loans")
 
         headers = {"HTTP_AUTHORIZATION": f"Token {token.key}"}
 
         # Act
-        request = factory.get(url, format="json", **headers)
+        request = api_client.get(url, format="json", **headers)
         response = view(request, pk=loan.id)
 
         # Assert
@@ -90,35 +101,25 @@ class TestLoanView:
 
 @pytest.mark.django_db
 class TestPaymentView:
-    def test_should_return_401_unauthorized_when_credentials_is_not_provided(self):
+    def test_should_return_401_unauthorized_when_credentials_is_not_provided(
+        self, api_client, user, token
+    ):
         # Arrange
-        User.objects.create_user(username="testuser", password="testpass")
-
         view = PaymentListCreateView.as_view()
-        factory = APIRequestFactory()
         url = reverse("payments")
 
         # Act
-        request = factory.post(url, data={"test": "data"}, format="json")
+        request = api_client.post(url, data={"test": "data"}, format="json")
         response = view(request)
 
         # Assert
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_should_return_201_created_when_create_payment(self):
+    def test_should_return_201_created_when_create_payment(
+        self, api_client, user, token, loan
+    ):
         # Arrange
-        user = User.objects.create_user(username="testuser", password="testpass")
-        token = Token.objects.create(user=user)
-        loan = Loan.objects.create(
-            nominal_value=1000,
-            interest_rate=0.05,
-            ip_address="127.0.0.1",
-            bank="Banco Teste",
-            client=user,
-        )
-
         view = PaymentListCreateView.as_view()
-        factory = APIRequestFactory()
         url = reverse("payments")
 
         data = {
@@ -128,7 +129,7 @@ class TestPaymentView:
         }
 
         # Act
-        request = factory.post(
+        request = api_client.post(
             url, data, format="json", HTTP_AUTHORIZATION=f"Token {token.key}"
         )
         response = view(request)
@@ -137,29 +138,19 @@ class TestPaymentView:
         assert response.status_code == status.HTTP_201_CREATED
         assert Payment.objects.count() == 1
 
-    def test_should_return_200_ok_when_get_payment_information(self):
+    def test_should_return_200_ok_when_get_payment_information(
+        self, api_client, user, token, loan
+    ):
         # Arrange
-        user = User.objects.create_user(username="testuser", password="testpass")
-        token = Token.objects.create(user=user)
-
-        loan = Loan.objects.create(
-            nominal_value=1000,
-            interest_rate=0.05,
-            ip_address="127.0.0.1",
-            bank="Banco Teste",
-            client=user,
-        )
-
         Payment.objects.create(payment_date=date.today(), payment_value=175, loan=loan)
 
         view = PaymentListCreateView.as_view()
-        factory = APIRequestFactory()
         url = reverse("payments")
 
         headers = {"HTTP_AUTHORIZATION": f"Token {token.key}"}
 
         # Act
-        request = factory.get(url, format="json", **headers)
+        request = api_client.get(url, format="json", **headers)
         response = view(request, pk=loan.id)
 
         # Assert
@@ -169,28 +160,26 @@ class TestPaymentView:
 
 @pytest.mark.django_db
 class TestRemainingBalanceView:
-    def test_should_return_401_unauthorized_when_credentials_is_not_provided(self):
+    def test_should_return_401_unauthorized_when_credentials_is_not_provided(
+        self, api_client, user, token
+    ):
         # Arrange
-        User.objects.create_user(username="testuser", password="testpass")
-
         view = PaymentListCreateView.as_view()
-        factory = APIRequestFactory()
         url = reverse(
             "remaining-balance", kwargs={"id": "d253ed71-c8df-4e90-9247-6aa3c539987d"}
         )
 
         # Act
-        request = factory.post(url, format="json")
+        request = api_client.post(url, format="json")
         response = view(request)
 
         # Assert
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_should_return_403_forbidden_when_user_not_authorized(self):
+    def test_should_return_403_forbidden_when_user_not_authorized(
+        self, api_client, token, loan
+    ):
         # Arrange
-        user = User.objects.create_user(username="testuser", password="testpass")
-        token = Token.objects.create(user=user)
-
         loan = Loan.objects.create(
             nominal_value=1000,
             interest_rate=0.05,
@@ -200,13 +189,12 @@ class TestRemainingBalanceView:
         )
 
         view = RemainingBalanceView.as_view()
-        factory = APIRequestFactory()
         url = reverse("remaining-balance", kwargs={"id": loan.pk})
 
         headers = {"HTTP_AUTHORIZATION": f"Token {token.key}"}
 
         # Act
-        request = factory.get(url, format="json", **headers)
+        request = api_client.get(url, format="json", **headers)
         response = view(request, id=loan.id)
 
         # Assert
@@ -215,31 +203,21 @@ class TestRemainingBalanceView:
             "error": "You do not have permission to access the resource"
         }
 
-    def test_should_return_200_ok_when_user_get_remaining_balance(self):
+    def test_should_return_200_ok_when_user_get_remaining_balance(
+        self, api_client, user, token, loan
+    ):
         # Arrange
-        user = User.objects.create_user(username="testuser", password="testpass")
-        token = Token.objects.create(user=user)
-
-        loan = Loan.objects.create(
-            nominal_value=1000,
-            interest_rate=0.05,
-            ip_address="127.0.0.1",
-            bank="Banco Teste",
-            client=user,
-        )
-
         payment = Payment.objects.create(
             payment_date=date.today(), payment_value=175, loan=loan
         )
 
         view = RemainingBalanceView.as_view()
-        factory = APIRequestFactory()
         url = reverse("remaining-balance", kwargs={"id": loan.pk})
 
         headers = {"HTTP_AUTHORIZATION": f"Token {token.key}"}
 
         # Act
-        request = factory.get(url, format="json", **headers)
+        request = api_client.get(url, format="json", **headers)
         response = view(request, id=loan.id)
 
         # Assert

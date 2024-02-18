@@ -22,9 +22,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/", include("loans.urls")),
-    path(
-        "api/token/", obtain_auth_token, name="api_token_auth"
-    ),  # Endpoint para obter token
+    path("api/token/", obtain_auth_token, name="api_token_auth"),
     path(
         "api/v1/swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
