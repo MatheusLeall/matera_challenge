@@ -36,7 +36,7 @@ python manage.py createsuperuser
 
 ##### Now you can use the API freely through its documentation.
 
-#### Oh, if you want to run the project's tests, you can also use docker-compose. There's a service for that:
+##### Oh, if you want to run the project's tests, you can also use docker-compose. There's a service for that:
 
 ```bash
 docker-compose up integration-tests
