@@ -2,4 +2,4 @@
 
 set -e
 
-pytest tests/
+pytest -xvvv tests/

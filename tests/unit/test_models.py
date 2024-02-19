@@ -28,7 +28,7 @@ class TestModels:
         assert loan.id is not None
         assert loan.calculate_remaining_balance() == REMAINIG_BALANCE
 
-    def test_payment_creation(self):
+    def test_should_create_payment(self):
         user = User.objects.create_user(username="testuser", password="testpass")
         loan = Loan.objects.create(
             nominal_value=25000,
