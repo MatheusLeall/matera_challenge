@@ -30,7 +30,7 @@ python manage.py createsuperuser
 
 ##### After creating the user, you'll need to create a token for them. In the admin panel (localhost:8000/admin), access the Tokens resource. In the upper right part of the screen, click on ADD TOKEN +, select the user you created, and click SAVE.
 
-##### With your user and token properly created, access the API (localhost:8000/api/v1/swagger) and click on the token endpoint. By clicking Try it out, you'll need to enter the username and password of the user you created in the previous step. After clicking execute, your authentication token will be returned.
+##### With your user and token properly created, access the API (localhost:8000/api/v1/docs) and click on the token endpoint. By clicking Try it out, you'll need to enter the username and password of the user you created in the previous step. After clicking execute, your authentication token will be returned.
 
 ##### Copy the returned token, click Authorize at the top right of the screen, then type Token and paste the token you copied (your input should be Token copied_token), and click Authorize to authenticate yourself to the API.
 
