@@ -140,6 +140,31 @@ class TestPaymentView:
             "error": "Payment amount greater than remaining balance."
         }
 
+    def test_should_return_400_bad_request_if_payment_value_less_than_zero(
+        self, api_client, user, token, loan
+    ):
+        # Arrange
+        view = PaymentListCreateView.as_view()
+        url = reverse("payments")
+
+        data = {
+            "payment_date": date.today(),
+            "payment_value": -2000,
+            "loan": loan.pk,
+        }
+
+        # Act
+        request = api_client.post(
+            url, data, format="json", HTTP_AUTHORIZATION=f"Token {token.key}"
+        )
+        response = view(request)
+
+        # Assert
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == {
+            "payment_value": ["Ensure this value is greater than or equal to 0.0."]
+        }
+
     def test_should_return_201_created_when_create_payment(
         self, api_client, user, token, loan
     ):
