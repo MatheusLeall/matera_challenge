@@ -25,6 +25,7 @@ docker-compose up app
 ```bash
 python manage.py createsuperuser
 ```
+> **Tip:** To create a superuser, have the application running in one terminal and open another terminal. Activate the virtual environment with the command **_poetry shell_** and run the command above.
 
 > **Warning:** Since sqlite3 was used in the project (to be as lightweight as possible), you may encounter an error when creating a user for the first time. If this happens, run **_sudo chmod 777 db.sqlite3_** in the project folder to grant read and write permissions to everyone on the database file. After doing this, run the above step again, and the user should be created.
 
