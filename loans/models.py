@@ -5,6 +5,7 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Sum
 
 
 class Loan(models.Model):
@@ -18,8 +19,12 @@ class Loan(models.Model):
     iof_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
 
     def calculate_remaining_balance(self) -> float:
-        payments = Payment.objects.filter(loan=self)
-        total_payed = sum(p.payment_value for p in payments)
+        total_payed = (
+            Payment.objects.filter(loan=self).aggregate(Sum("payment_value"))[
+                "payment_value__sum"
+            ]
+            or 0
+        )
         days_passed = (date.today() - self.request_date).days
         accumulated_rates = (
             (self.interest_rate / 30) * days_passed * (self.nominal_value - total_payed)

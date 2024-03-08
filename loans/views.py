@@ -40,17 +40,6 @@ class PaymentListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        loan = serializer.validated_data["loan"]
-        payment_value = serializer.validated_data["payment_value"]
-        remaining_balance = loan.calculate_remaining_balance()
-
-        if payment_value > remaining_balance:
-            return Response(
-                {"error": "Payment amount greater than remaining balance."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
