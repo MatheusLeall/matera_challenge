@@ -17,12 +17,6 @@ class LoanListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(client=self.request.user)
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        data = {"results": serializer.data}
-        return Response(data)
-
     def get_queryset(self):
         return Loan.objects.filter(client=self.request.user)
 
@@ -30,12 +24,6 @@ class LoanListCreateView(generics.ListCreateAPIView):
 class PaymentListCreateView(generics.ListCreateAPIView):
     serializer_class = PaymentSerializer
     permission_classes = [IsAuthenticated]
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        data = {"results": serializer.data}
-        return Response(data)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

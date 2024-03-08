@@ -9,6 +9,13 @@ class LoanSerializer(serializers.ModelSerializer):
         model = Loan
         exclude = ["id"]
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        representation = {"results": representation}
+
+        return representation
+
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,6 +40,13 @@ class PaymentSerializer(serializers.ModelSerializer):
             )
 
         return value
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        representation = {"results": representation}
+
+        return representation
 
 
 class RemainingBalanceSerializer(serializers.ModelSerializer):
